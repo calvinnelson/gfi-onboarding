@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GFI Agent Onboarding</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #f5f5f3; min-height: 100vh; display: flex; align-items: flex-start; justify-content: center; padding: 2rem 1rem; }
+    .wrap { width: 100%; max-width: 680px; }
+    .header { display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem; }
+    .header-icon { width: 42px; height: 42px; background: #1a56db; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+    h1 { font-size: 20px; font-weight: 600; color: #111; }
+    .sub { font-size: 14px; color: #666; margin-top: 2px; }
+    .card { background: #fff; border: 1px solid #e5e5e3; border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1rem; }
+    .section-label { font-size: 11px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: #999; margin-bottom: .85rem; }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    label { font-size: 13px; color: #444; font-weight: 500; }
+    .req { color: #d44; }
+    input, select { height: 38px; padding: 0 11px; font-size: 14px; border: 1px solid #ddd; border-radius: 8px; width: 100%; background: #fff; color: #111; transition: border-color .15s; }
+    input:focus, select:focus { outline: none; border-color: #1a56db; box-shadow: 0 0 0 3px rgba(26,86,219,.1); }
+    .checks { display: flex; flex-direction: column; gap: 10px; margin-bottom: 1.25rem; }
+    .checks label { display: flex; align-items: center; gap: 9px; font-size: 14px; font-weight: 400; color: #333; cursor: pointer; }
+    .checks input[type="checkbox"] { width: 16px; height: 16px; flex-shrink: 0; cursor: pointer; }
+    .btn-row { display: flex; align-items: center; gap: 14px; }
+    .btn-run { background: #1a56db; color: #fff; border: none; border-radius: 9px; padding: 0 1.6rem; height: 44px; font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: background .15s; }
+    .btn-run:hover { background: #1446b8; }
+    .btn-run:disabled { opacity: .45; cursor: default; }
+    #status-msg { font-size: 13px; color: #666; }
+    #results { display: none; }
+    .result-item { display: flex; align-items: center; gap: 10px; padding: .55rem 0; border-bottom: 1px solid #f0f0ee; font-size: 13px; color: #333; }
+    .result-item:last-child { border-bottom: none; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .dot-ok { background: #22c55e; }
+    .dot-err { background: #ef4444; }
+    .result-item span { flex: 1; }
+    .result-item a { color: #1a56db; font-weight: 500; text-decoration: none; }
+    .result-item a:hover { text-decoration: underline; }
+    .error-box { background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: .75rem 1rem; font-size: 13px; color: #b91c1c; margin-top: .75rem; display: none; white-space: pre-wrap; }
+    @media (max-width: 520px) { .grid2, .grid3 { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <div class="header-icon">👤</div>
+    <div>
+      <h1>GFI Agent Onboarding</h1>
+      <div class="sub">Add a new agent and generate all documents in one click</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-label">Agent Information</div>
+    <div class="grid2" style="margin-bottom:12px">
+      <div class="field"><label>Full name <span class="req">*</span></label><input id="f-name" type="text" placeholder="e.g. Jane Smith" autocomplete="off"></div>
+      <div class="field"><label>Agent ID</label><input id="f-id" type="text" placeholder="e.g. F9800"></div>
+    </div>
+    <div class="grid3" style="margin-bottom:12px">
+      <div class="field"><label>Email <span class="req">*</span></label><input id="f-email" type="email" placeholder="jane@email.com"></div>
+      <div class="field"><label>Phone <span class="req">*</span></label><input id="f-phone" type="tel" placeholder="619-555-0100"></div>
+      <div class="field"><label>Date of birth</label><input id="f-dob" type="date"></div>
+    </div>
+    <div class="grid3">
+      <div class="field"><label>Start date <span class="req">*</span></label><input id="f-start" type="date"></div>
+      <div class="field"><label>State <span class="req">*</span></label>
+        <select id="f-state">
+          <option value="">Select state</option>
+          <option>AK</option><option>AL</option><option>AR</option><option>AZ</option>
+          <option>CA</option><option>CO</option><option>CT</option><option>DE</option>
+          <option>FL</option><option>GA</option><option>HI</option><option>IA</option>
+          <option>ID</option><option>IL</option><option>IN</option><option>KS</option>
+          <option>KY</option><option>LA</option><option>MA</option><option>MD</option>
+          <option>ME</option><option>MI</option><option>MN</option><option>MO</option>
+          <option>MS</option><option>MT</option><option>NC</option><option>ND</option>
+          <option>NE</option><option>NH</option><option>NJ</option><option>NM</option>
+          <option>NV</option><option>NY</option><option>OH</option><option>OK</option>
+          <option>OR</option><option>PA</option><option>RI</option><option>SC</option>
+          <option>SD</option><option>TN</option><option>TX</option><option>UT</option>
+          <option>VA</option><option>VT</option><option>WA</option><option>WI</option>
+          <option>WV</option><option>WY</option>
+        </select>
+      </div>
+      <div class="field"><label>Status</label>
+        <select id="f-status">
+          <option>Active</option><option>Passed Exam</option>
+          <option>License Issued</option><option>Fully Licensed-PT</option>
+          <option>Not Active</option><option>MIA</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-label">Team Information</div>
+    <div class="grid3">
+      <div class="field"><label>Recruiter</label><input id="f-recruiter" type="text" placeholder="Recruiter name"></div>
+      <div class="field"><label>Upline</label><input id="f-upline" type="text" placeholder="Upline name"></div>
+      <div class="field"><label>CFT</label><input id="f-cft" type="text" placeholder="CFT name"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-label">Onboarding 1 — Trainer Email</div>
+    <div class="field">
+      <label>Trainer's email doing Onboarding 1 <span class="req">*</span></label>
+      <input id="f-trainer-email" type="email" placeholder="trainer@email.com">
+      <div style="font-size:12px;color:#888;margin-top:4px">A checklist + pre-written agent email will be sent here after onboarding runs</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-label">Actions</div>
+    <div class="checks">
+      <label><input type="checkbox" id="ck-folder"  checked> Create agent folder in Drive</label>
+      <label><input type="checkbox" id="ck-prog"    checked> Copy &amp; fill progression sheet</label>
+      <label><input type="checkbox" id="ck-hw"      checked> Copy &amp; personalise homework</label>
+      <label><input type="checkbox" id="ck-fq"      checked> Copy financial questionnaire</label>
+      <label><input type="checkbox" id="ck-share"> Share folder with agent's email</label>
+      <label><input type="checkbox" id="ck-roster"  checked> Add agent to GFI Roster</label>
+      <label><input type="checkbox" id="ck-links"   checked> Write doc links to roster (cols T, U, Y)</label>
+    </div>
+    <div class="btn-row">
+      <button class="btn-run" id="run-btn" onclick="runOnboarding()">⚡ Run Onboarding</button>
+      <span id="status-msg"></span>
+    </div>
+    <div class="error-box" id="error-box"></div>
+  </div>
+
+  <div class="card" id="results">
+    <div class="section-label">Results</div>
+    <div id="result-rows"></div>
+  </div>
+</div>
+
+<script>
+  function runOnboarding() {
+    var name  = document.getElementById("f-name").value.trim();
+    var email = document.getElementById("f-email").value.trim();
+    var phone = document.getElementById("f-phone").value.trim();
+    var start = document.getElementById("f-start").value;
+    var state = document.getElementById("f-state").value;
+
+    var missing = [];
+    if (!name)  missing.push("Full name");
+    if (!email) missing.push("Email");
+    if (!phone) missing.push("Phone");
+    if (!start) missing.push("Start date");
+    if (!state) missing.push("State");
+    var trainerEmail = document.getElementById("f-trainer-email").value.trim();
+    if (!trainerEmail) missing.push("Trainer's email");
+    if (missing.length) { showError("Required: " + missing.join(", ")); return; }
+
+    hideError();
+    var btn = document.getElementById("run-btn");
+    btn.disabled = true;
+    document.getElementById("status-msg").textContent = "Running — this takes about 20-30 seconds…";
+
+    var payload = {
+      name:            name,
+      email:           email,
+      phone:           phone,
+      startDate:       start,
+      state:           state,
+      agentId:         document.getElementById("f-id").value.trim(),
+      dob:             document.getElementById("f-dob").value,
+      status:          document.getElementById("f-status").value,
+      recruiter:       document.getElementById("f-recruiter").value.trim(),
+      upline:          document.getElementById("f-upline").value.trim(),
+      cft:             document.getElementById("f-cft").value.trim(),
+      createFolder:    document.getElementById("ck-folder").checked,
+      copyProgression: document.getElementById("ck-prog").checked,
+      copyHomework:    document.getElementById("ck-hw").checked,
+      copyFinancialQ:  document.getElementById("ck-fq").checked,
+      shareWithAgent:  document.getElementById("ck-share").checked,
+      addToRoster:     document.getElementById("ck-roster").checked,
+      writeLinks:      document.getElementById("ck-links").checked,
+      trainerEmail:    document.getElementById("f-trainer-email").value.trim()
+    };
+
+    // ── Calls the Netlify serverless function (not Google directly) ──
+    fetch("/.netlify/functions/onboard", {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify(payload)
+    })
+    .then(function(r) {
+      // If Netlify itself returned an error page, catch it here
+      if (!r.ok) {
+        return r.text().then(function(t) {
+          throw new Error("Netlify function error " + r.status + ": " + t.substring(0, 150));
+        });
+      }
+      return r.json();
+    })
+    .then(function(data) {
+      btn.disabled = false;
+      document.getElementById("status-msg").textContent = "";
+      if (data.success) {
+        showResults(data);
+        clearForm();
+      } else {
+        showError("Error: " + (data.error || "Unknown error"));
+        if (data.log) showError("Error: " + (data.error || "Unknown") + "\n\nLog: " + data.log.join(", "));
+      }
+    })
+    .catch(function(err) {
+      btn.disabled = false;
+      document.getElementById("status-msg").textContent = "";
+      showError("Error: " + err.message);
+    });
+  }
+
+  function showResults(data) {
+    var card = document.getElementById("results");
+    var rows = document.getElementById("result-rows");
+    card.style.display = "block";
+    rows.innerHTML = "";
+    var items = [
+      ["Added to GFI Roster",     data.rosterRow ? "Row " + data.rosterRow : null, null],
+      ["Agent folder",            data.folderLink ? "Open ↗" : null,               data.folderLink],
+      ["Progression sheet",       data.progressionLink ? "Open ↗" : null,          data.progressionLink],
+      ["Homework",                data.homeworkLink ? "Open ↗" : null,             data.homeworkLink],
+      ["Financial questionnaire", data.financialQLink ? "Open ↗" : null,           data.financialQLink]
+    ];
+    items.forEach(function(item) {
+      if (!item[1]) return;
+      var d = document.createElement("div");
+      d.className = "result-item";
+      d.innerHTML = '<div class="dot dot-ok"></div><span>' + item[0] + '</span>' +
+        (item[2] ? '<a href="' + item[2] + '" target="_blank">' + item[1] + '</a>'
+                 : '<span style="color:#555">' + item[1] + '</span>');
+      rows.appendChild(d);
+    });
+    if (data.log && data.log.some(function(l) { return l.indexOf("Warning") === 0; })) {
+      var d = document.createElement("div");
+      d.style.cssText = "margin-top:.75rem;font-size:12px;color:#999;";
+      d.textContent = data.log.filter(function(l) { return l.indexOf("Warning") === 0; }).join(" | ");
+      rows.appendChild(d);
+    }
+  }
+
+  function clearForm() {
+    ["f-name","f-id","f-email","f-phone","f-dob","f-start","f-recruiter","f-upline","f-cft"]
+      .forEach(function(id) { document.getElementById(id).value = ""; });
+    document.getElementById("f-state").value        = "";
+    document.getElementById("f-status").value       = "Active";
+    document.getElementById("f-trainer-email").value = "";
+  }
+
+  function showError(msg) {
+    var b = document.getElementById("error-box");
+    b.textContent = msg;
+    b.style.display = "block";
+  }
+  function hideError() {
+    document.getElementById("error-box").style.display = "none";
+  }
+</script>
+</body>
+</html>
